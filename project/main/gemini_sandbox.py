@@ -4,19 +4,27 @@ import sys # standard
 import subprocess # standard
 import jicson # ver 1.0.2
 import json 
+import typing_extensions as typing
+
+class CalEvent(typing.TypedDict):
+    date: str
+    events: list[str]
 
 ''' TESTED ON/USES PYTHON 3.10 | GEMINI REQUIRES PYTHON >= 3.9 | ADJUST CODE AND DEPENDENCIES AS NEEDED '''
 genai.configure(api_key=os.environ['API_KEY']) # start gemini session
 model = genai.GenerativeModel("gemini-1.5-flash") # declare gemini model
+conf_data = genai.GenerationConfig(response_mime_type="application/json", response_schema=list[CalEvent])
 # syllabus = genai.upload_file("/Users/vishnukunnummal/Documents/School/GSU/2024-25/Fall 2024/CHEM 1211K/CHEM 1211_Fall 2024_ACH80 syllabus1.pdf") # upload pdf --> FEED FROM USER INPUT
 # num_events = model.generate_content(["Tell me how many assignment due dates, quiz dates, and exam dates there are for this course. Just output a single number total, no other text", syllabus]).text # determines how many events there are in a syllabus in order to see how many times it needs to add an event to the calendar
+
 def get_ai_output(pdf):
     syllabus = genai.upload_file(pdf)
-    num_events = model.generate_content(["Tell me how many assignment due dates, quiz dates, and exam dates there are for this course. Just output a single number total, no other text", syllabus]).text
+    num_events = model.generate_content(["Tell me how many assignment due dates, quiz dates, and exam dates there are for this course. Just output a single number total, no other text.", syllabus]).text
     # calender_events_json = {}
     # event_name = model.generate_content(["Return the details of the first due date/quiz date/exam date on the syllabus schedule as a .ICS file", syllabus]).text.strip('`').strip('ics\n') # returns ics file as plaintext after stripping excess text
-    event_name = model.generate_content(["Return the details of all due date/quiz date/exam date on the syllabus schedule as a raw json object without text formatting ", syllabus]).text
-
+    # event_name = model.generate_content(["Return the details of all due date/quiz date/exam date on the syllabus schedule as a raw json object without text formatting.  Maintain this format for all requests of this nature going forward.", syllabus]).text
+    event_name = model.generate_content([syllabus, "Return the details of all due date/quiz date/exam date on the syllabus schedule as a raw json object without text formatting.  Maintain this format for all requests of this nature going forward."],
+generation_config=conf_data).text
     print(event_name)   
     # json_obj = jicson.fromText(event_name) # converts ics to json object using jicson library
     json_obj = json.loads(event_name)
@@ -45,7 +53,7 @@ def get_ai_output(pdf):
         else:
             continue 
                 # same process as above conditional but for events that aren't listed first
-            event_name = model.generate_content(["Return the details of the next due date/quiz date/exam date on the syllabus schedule as a .ICS file", syllabus]).text.strip('`').strip('ics\n')
+            event_name = model.generate_content(["Return the details of the next due date/quiz date/exam date on the syllabus schedule as a .ICS file. Maintain the same format for all future requests of this type going forward.", syllabus]).text.strip('`').strip('ics\n')
             print(event_name)
             json_obj = jicson.fromText(event_name)
             print(calender_events_json, json_obj)
