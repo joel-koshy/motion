@@ -1,6 +1,8 @@
 from django.shortcuts import render
-from .models import test_collection
-from django.http import HttpResponse
+from .models import test_collection, Files
+from django.http import HttpResponse, JsonResponse
+from .gemini_sandbox import get_ai_output
+
 # Create your views here.
 
 
@@ -13,9 +15,12 @@ def syllabus_upload(request):
         data = {
             "pdf":request.FILES.get('pdf')
         }
-        print("Hello")
-        print(data)
-        return HttpResponse()
+    
+        # res = get_ai_output(request.FILES.get('pdf'))
+        file = Files.objects.create(file=request.FILES.get('pdf'))
+        res = get_ai_output(file.file.path)
+        # print(type(res))
+        return JsonResponse(res)
     
     elif request.method == 'GET':
         return render(request, 'main/upload_pdf.html', {})
