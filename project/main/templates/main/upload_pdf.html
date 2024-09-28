@@ -43,7 +43,7 @@ Upload Syllabus
         <span class="close" onclick="closeModal()">&times;</span>
         <h2>Upload Syllabus</h2>
         <form action="{% url 'upload_pdf' %}" method="post" enctype="multipart/form-data" id="uploadForm">
-{%csrf_token%}
+            {% csrf_token %}
             <label for="fileInput">Choose a file:</label>
             <input type="file" id="fileInput" required accept=".pdf" name="pdf" required>
             <br><br>
@@ -52,81 +52,6 @@ Upload Syllabus
     </div>
 </div>
 <script>
-function openModal() {
-    // Create modal elements
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    
-    const modalContent = document.createElement('div');
-    modalContent.className = 'modal-content';
-    
-    const closeButton = document.createElement('span');
-    closeButton.className = 'close';
-    closeButton.innerHTML = '&times;';
-    closeButton.onclick = () => { closeModal(modal); };
-    
-    const header = document.createElement('h2');
-    header.innerText = 'Upload Syllabus';
-
-    const form = document.createElement('form');
-    form.action = '{% url "upload_pdf" %}'; // Replace with your backend URL
-    form.method = 'post';
-    form.enctype = 'multipart/form-data';
-    form.id = 'uploadForm';
-
-    const csrfToken = document.createElement('input');
-    csrfToken.type = 'hidden';
-    csrfToken.name = 'csrfmiddlewaretoken'; // Include CSRF token as needed
-
-    const label = document.createElement('label');
-    label.setAttribute('for', 'fileInput');
-    label.innerText = 'Choose a file:';
-    
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.id = 'fileInput';
-    fileInput.name = 'pdf';
-    fileInput.required = true;
-    fileInput.accept = '.pdf';
-    
-    const uploadButton = document.createElement('button');
-    uploadButton.type = 'submit';
-    uploadButton.innerText = 'Upload';
-
-    // Append elements to the form
-    form.appendChild(csrfToken);
-    form.appendChild(label);
-    form.appendChild(fileInput);
-    form.appendChild(uploadButton);
-    
-    // Append all elements to modal content
-    modalContent.appendChild(closeButton);
-    modalContent.appendChild(header);
-    modalContent.appendChild(form);
-    
-    // Append modal content to modal
-    modal.appendChild(modalContent);
-    
-    // Append modal to body
-    document.body.appendChild(modal);
-    
-    // Show modal
-    modal.style.display = 'block';
-    
-    // Close modal when clicking outside of modal content
-    window.onclick = function(event) {
-        if (event.target === modal) {
-            closeModal(modal);
-        }
-    };
-
-    // Handle form submission
-    form.addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent page reload
-        alert('File uploaded successfully!');
-        closeModal(modal); // Close modal after submission
-    });
-}
 
 // Function to close the modal
 function closeModal(modal) {
