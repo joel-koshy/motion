@@ -1,0 +1,15 @@
+{% extends 'main/base.html'%}
+
+{%block title%}
+Upload Syllabus
+{%endblock%}
+
+{%block content%}
+<div>
+    <form action="{% url 'upload_pdf' %}" method="post" enctype="multipart/form-data">
+        {%csrf_token%}
+        <input type="file" required accept=".pdf" name="pdf">
+        <button type="submit">Upload</button>
+    </form>
+</div>
+{%endblock%}
