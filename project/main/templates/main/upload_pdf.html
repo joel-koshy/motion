@@ -4,6 +4,38 @@
 Upload Syllabus
 {%endblock%}
 
+{%block js%}
+<script type='importmap'>
+      {
+        "imports": {
+          "@fullcalendar/core": "https://cdn.skypack.dev/@fullcalendar/core@6.1.15",
+          "@fullcalendar/daygrid": "https://cdn.skypack.dev/@fullcalendar/daygrid@6.1.15"
+        }
+      }
+    </script>
+    <script type='module'>
+      import { Calendar } from '@fullcalendar/core'
+      import dayGridPlugin from '@fullcalendar/daygrid'
+
+      document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('calendar')
+        const calendarEvents = JSON.parse('{{calendarEvents|safe}}') 
+        console.log(calendarEvents)
+        const calendar = new Calendar(calendarEl, {
+          width: '80%', 
+          plugins: [dayGridPlugin],
+          headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+          }, 
+          events: calendarEvents
+        })
+        calendar.render()
+      })
+    </script>
+{%endblock%}
+
 {%block main%}
 <div class="container">
     <header>
@@ -11,29 +43,31 @@ Upload Syllabus
         <nav>
             <ul>
                 <button id="addNotesButton">Add Notes</button>
-                <button id="uploadButton">Upload Syllabus</button>
+                <button id="uploadButton" onclick="openUploadPopup()">Upload Syllabus</button>
 
             </ul>
         </nav>
     </header>
-    <div id="calendar"></div>
-    <aside>
-        <div class="menu">
-            <div class="section-title">YOU</div>
-            <ul>
-                <li><button>Calendar</button></li>
-                <li><button>Classes</button></li>
-                <li><button>Notes</button></li>
-            </ul>
-            <div class="section-title">COMPANY</div>
-            <ul>
-                <li><button>Upload</button></li>
-                <li><button>Schedule</button></li>
-                <li><button>Notes</button></li>
-            </ul>
-        </div>
-    </aside>
-
+    <div class="something">
+        <aside>
+            <div class="menu">
+                <div class="section-title">YOU</div>
+                <ul>
+                    <li><button>Calendar</button></li>
+                    <li><button>Classes</button></li>
+                    <li><button>Notes</button></li>
+                </ul>
+                <div class="section-title">COMPANY</div>
+                <ul>
+                    <li><button>Upload</button></li>
+                    <li><button>Schedule</button></li>
+                    <li><button>Notes</button></li>
+                </ul>
+            </div>
+        </aside>
+        <div id="calendar"></div>
+    </div>
+    
 </div>
 {%endblock%}
 
@@ -55,8 +89,14 @@ Upload Syllabus
 
 // Function to close the modal
 function closeModal(modal) {
-    modal.style.display = 'none';
-    document.body.removeChild(modal); // Remove modal from the DOM
+    const popup = document.getElementById('uploadModal')
+    popup.style.display = 'none';
+}
+
+function openUploadPopup(){
+    const popup = document.getElementById('uploadModal')
+    console.log("Hellow")
+    popup.style.display = 'Block'
 }
 
 // Function to create and open the Add Notes modal

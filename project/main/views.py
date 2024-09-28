@@ -5,7 +5,7 @@ from .gemini_sandbox import get_ai_output
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
-
+import json 
 # Create your views here.
 
 
@@ -22,11 +22,21 @@ def syllabus_upload(request):
         # res = get_ai_output(request.FILES.get('pdf'))
         file = Files.objects.create(file=request.FILES.get('pdf'))
         res = get_ai_output(file.file.path)
-        # print(type(res))
-        return JsonResponse(res, safe=False)
+        json_parsed = json.dumps(res)
+        context = {
+            "calendarEvents": json_parsed
+        }
+        print(type(res))
+        print(res)
+        
+        # return JsonResponse(res, safe=False)
+        return render(request, 'main/upload_pdf.html', context) 
     
     elif request.method == 'GET':
-        return render(request, 'main/upload_pdf.html', {})
+        context = {
+            "calendarEvents":[]
+        }
+        return render(request, 'main/upload_pdf.html', context)
     
 
 
