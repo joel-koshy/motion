@@ -4,12 +4,262 @@
 Upload Syllabus
 {%endblock%}
 
-{%block content%}
-<div>
-    <form action="{% url 'upload_pdf' %}" method="post" enctype="multipart/form-data">
-        {%csrf_token%}
-        <input type="file" required accept=".pdf" name="pdf">
-        <button type="submit">Upload</button>
-    </form>
+{%block main%}
+<div class="container">
+    <header>
+        <div class="logo">Motion</div>
+        <nav>
+            <ul>
+                <button id="addNotesButton">Add Notes</button>
+                <button id="uploadButton">Upload Syllabus</button>
+
+            </ul>
+        </nav>
+    </header>
+
+    <aside>
+        <div class="menu">
+            <div class="section-title">YOU</div>
+            <ul>
+                <li><button>Calendar</button></li>
+                <li><button>Classes</button></li>
+                <li><button>Notes</button></li>
+            </ul>
+            <div class="section-title">COMPANY</div>
+            <ul>
+                <li><button>Upload</button></li>
+                <li><button>Schedule</button></li>
+                <li><button>Notes</button></li>
+            </ul>
+        </div>
+    </aside>
+
 </div>
 {%endblock%}
+
+{%block content%}
+<div id="uploadModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Upload Syllabus</h2>
+        <form action="{% url 'upload_pdf' %}" method="post" enctype="multipart/form-data" id="uploadForm">
+{%csrf_token%}
+            <label for="fileInput">Choose a file:</label>
+            <input type="file" id="fileInput" required accept=".pdf" name="pdf" required>
+            <br><br>
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+</div>
+<script>
+    // Function to create and open the Upload Syllabus modal
+function openModal() {
+    // Create modal elements
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content';
+    
+    const closeButton = document.createElement('span');
+    closeButton.className = 'close';
+    closeButton.innerHTML = '&times;';
+    closeButton.onclick = () => { closeModal(modal); };
+    
+    const header = document.createElement('h2');
+    header.innerText = 'Upload Syllabus';
+
+    const form = document.createElement('form');
+    form.action = '{% url "upload_pdf" %}'; // Replace with your backend URL
+    form.method = 'post';
+    form.enctype = 'multipart/form-data';
+    form.id = 'uploadForm';
+
+    const csrfToken = document.createElement('input');
+    csrfToken.type = 'hidden';
+    csrfToken.name = 'csrfmiddlewaretoken'; // Include CSRF token as needed
+
+    const label = document.createElement('label');
+    label.setAttribute('for', 'fileInput');
+    label.innerText = 'Choose a file:';
+    
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.id = 'fileInput';
+    fileInput.name = 'pdf';
+    fileInput.required = true;
+    fileInput.accept = '.pdf';
+    
+    const uploadButton = document.createElement('button');
+    uploadButton.type = 'submit';
+    uploadButton.innerText = 'Upload';
+
+    // Append elements to the form
+    form.appendChild(csrfToken);
+    form.appendChild(label);
+    form.appendChild(fileInput);
+    form.appendChild(uploadButton);
+    
+    // Append all elements to modal content
+    modalContent.appendChild(closeButton);
+    modalContent.appendChild(header);
+    modalContent.appendChild(form);
+    
+    // Append modal content to modal
+    modal.appendChild(modalContent);
+    
+    // Append modal to body
+    document.body.appendChild(modal);
+    
+    // Show modal
+    modal.style.display = 'block';
+    
+    // Close modal when clicking outside of modal content
+    window.onclick = function(event) {
+        if (event.target === modal) {
+            closeModal(modal);
+        }
+    };
+
+    // Handle form submission
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent page reload
+        alert('File uploaded successfully!');
+        closeModal(modal); // Close modal after submission
+    });
+}
+
+// Function to close the modal
+function closeModal(modal) {
+    modal.style.display = 'none';
+    document.body.removeChild(modal); // Remove modal from the DOM
+}
+
+// Function to create and open the Add Notes modal
+function openNotesModal() {
+    // Create modal elements
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content';
+    
+    const closeButton = document.createElement('span');
+    closeButton.className = 'close';
+    closeButton.innerHTML = '&times;';
+    closeButton.onclick = () => { closeNotesModal(modal); };
+
+    const header = document.createElement('h2');
+    header.innerText = 'Add Notes';
+
+    const form = document.createElement('form');
+    form.id = 'notesForm';
+
+    const dateLabel = document.createElement('label');
+    dateLabel.setAttribute('for', 'dateInput');
+    dateLabel.innerText = 'Select Date:';
+    
+    const dateInput = document.createElement('input');
+    dateInput.type = 'date';
+    dateInput.id = 'dateInput';
+    dateInput.required = true;
+
+    const classLabel = document.createElement('label');
+    classLabel.setAttribute('for', 'classDropdown');
+    classLabel.innerText = 'Select Class/Course:';
+
+    const classDropdown = document.createElement('select');
+    classDropdown.id = 'classDropdown';
+    classDropdown.required = true;
+
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.innerText = '--Select Class--';
+    classDropdown.appendChild(defaultOption);
+
+    // Add class options
+    const classes = ['Mathematics', 'Physics', 'English Literature'];
+    classes.forEach((className) => {
+        const option = document.createElement('option');
+        option.value = className.toLowerCase().replace(/\s+/g, ''); // Convert to lowercase and remove spaces
+        option.innerText = className;
+        classDropdown.appendChild(option);
+    });
+
+    const noteLabel = document.createElement('label');
+    noteLabel.setAttribute('for', 'noteText');
+    noteLabel.innerText = 'Note:';
+    
+    const noteText = document.createElement('textarea');
+    noteText.id = 'noteText';
+    noteText.rows = '4';
+    noteText.cols = '50';
+    noteText.placeholder = 'Add your note here';
+    noteText.required = true;
+
+    const addButton = document.createElement('button');
+    addButton.type = 'submit';
+    addButton.innerText = 'Add Note';
+
+    // Append elements to the form
+    form.appendChild(dateLabel);
+    form.appendChild(dateInput);
+    form.appendChild(classLabel);
+    form.appendChild(classDropdown);
+    form.appendChild(noteLabel);
+    form.appendChild(noteText);
+    form.appendChild(addButton);
+    
+    // Append all elements to modal content
+    modalContent.appendChild(closeButton);
+    modalContent.appendChild(header);
+    modalContent.appendChild(form);
+    
+    // Append modal content to modal
+    modal.appendChild(modalContent);
+    
+    // Append modal to body
+    document.body.appendChild(modal);
+    
+    // Show modal
+    modal.style.display = 'block';
+    
+    // Close modal when clicking outside of modal content
+    window.onclick = function(event) {
+        if (event.target === modal) {
+            closeNotesModal(modal);
+        }
+    };
+
+    // Handle form submission for notes
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent page reload
+
+        // Get form values
+        const date = dateInput.value;
+        const classSelected = classDropdown.value;
+        const note = noteText.value;
+
+        // Simple form validation
+        if (date && classSelected && note) {
+            alert('Note added successfully!');
+            closeNotesModal(modal); // Close modal after submission
+        } else {
+            alert('Please fill out all fields.');
+        }
+    });
+}
+
+// Function to close the Add Notes modal
+function closeNotesModal(modal) {
+    modal.style.display = 'none';
+    document.body.removeChild(modal); // Remove modal from the DOM
+}
+
+// Function to handle button clicks
+document.getElementById('uploadButton').onclick = openModal;
+document.getElementById('addNotesButton').onclick = openNotesModal;
+</script>
+{%endblock%}
+
+
