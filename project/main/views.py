@@ -28,7 +28,8 @@ def syllabus_upload(request):
     elif request.method == 'GET':
         return render(request, 'main/upload_pdf.html', {})
     
-
+def tracker_page(request):
+    return render(request, 'main/Assignment_Tracker.html', {})
 
 
 def home(request): 
