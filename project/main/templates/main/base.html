@@ -155,8 +155,9 @@
      #fileInput {
          padding: 10px;
      }
-      
-     </style>
+    </style>
+     {%block extra-css %}
+     {%endblock%} 
 <script type='importmap'>
       {
         "imports": {
@@ -188,7 +189,6 @@
 <body>
     <main>
         {% block main%}
-            temp
         {% endblock %}
         
         {% block content%}
