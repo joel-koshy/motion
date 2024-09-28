@@ -8,3 +8,6 @@ def test(request):
     data = test_collection.list_collection_names()
     return HttpResponse(data)
 
+
+def home(request): 
+    return render(request, 'main/base.html', {})
