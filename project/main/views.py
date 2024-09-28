@@ -23,7 +23,7 @@ def syllabus_upload(request):
         file = Files.objects.create(file=request.FILES.get('pdf'))
         res = get_ai_output(file.file.path)
         # print(type(res))
-        return JsonResponse(res)
+        return JsonResponse(res, safe=False)
     
     elif request.method == 'GET':
         return render(request, 'main/upload_pdf.html', {})
