@@ -4,3 +4,5 @@ from .db_connection import client
 
 test_collection = client['sample_mflix']
 
+class Files(models.Model): 
+    file = models.FileField(upload_to="syllabus")
