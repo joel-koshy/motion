@@ -76,18 +76,77 @@ Assingment Tracker
         // Lighten the color
         return `rgba(${r}, ${g}, ${b}, 0.3)`;
     }
-    function sortAssignments(){
-        let sortOption = document.getElementById('sortOptions').value
-        console.log(sortOption)
-        if(sortOption == "type"){
-            window.location.href = window.location.href + "eventType" 
-        }else if (sortOption = "dueDate"){
-            window.location.href = window.location.href + "start"
-        }else if (sortOption = "title"){
-            window.location.href = window.location.href + "title"
+    // Function to set the correct dropdown option based on the current URL parameter
+function setInitialSortOption() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sortParam = urlParams.get('sort');
+
+    const sortOptions = document.getElementById('sortOptions');
+    
+    if (sortParam) {
+        sortOptions.value = sortParam; // Set the dropdown to the current sort option
+    }
+}
+
+function setInitialSortOption() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sortParam = urlParams.get('sort');
+
+    const sortOptions = document.getElementById('sortOptions');
+    
+    if (sortParam) {
+        // Match the sort option to the value in the dropdown
+        if (sortParam === 'start') {
+            sortOptions.value = 'dueDate';
+        } else if (sortParam === 'course') {
+            sortOptions.value = 'class';
+        } else if (sortParam === 'eventType') {
+            sortOptions.value = 'type';
+        } else if (sortParam === 'title') {
+            sortOptions.value = 'title';
         }
     }
-   
+}
+
+// Function to handle sorting
+function sortAssignments() {
+    const sortOption = document.getElementById('sortOptions').value;
+    let queryParams = '';
+
+    if (sortOption === 'dueDate') {
+        queryParams = 'start';
+    } else if (sortOption === 'class') {
+        queryParams = 'course';
+    } else if (sortOption === 'type') {
+        queryParams = 'eventType';
+    } else if (sortOption === 'title') {
+        queryParams = 'title';
+    }
+
+    // Redirect to the new URL with the selected sort option
+    window.location.href = "http://localhost:8000/tracker/" + queryParams;
+}
+
+// Function to set the dropdown based on the current URL
+function setInitialSortOption() {
+    const currentUrl = window.location.href;
+
+    if (currentUrl.includes('start')) {
+        document.getElementById('sortOptions').value = 'dueDate';
+    } else if (currentUrl.includes('course')) {
+        document.getElementById('sortOptions').value = 'class';
+    } else if (currentUrl.includes('eventType')) {
+        document.getElementById('sortOptions').value = 'type';
+    } else if (currentUrl.includes('title')) {
+        document.getElementById('sortOptions').value = 'title';
+    }
+}
+
+// Attach the sort function to the dropdown's onchange event
+document.getElementById('sortOptions').addEventListener('change', sortAssignments);
+
+// Set the initial sort option based on the URL when the page loads
+window.onload = setInitialSortOption;
 </script>
 {%endblock%}
 
