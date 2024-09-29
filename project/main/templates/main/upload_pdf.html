@@ -85,6 +85,9 @@ Upload Syllabus
             {% csrf_token %}
             <label for="fileInput">Choose a file:</label>
             <input type="file" id="fileInput" required accept=".pdf" name="pdf" required>
+            <label for="courseInput">What will this course be called?</label>
+            <input type="text" id="courseInput" name="course" required>
+            <input type="color" name="color">
             <br><br>
             <button type="submit">Upload</button>
         </form>
