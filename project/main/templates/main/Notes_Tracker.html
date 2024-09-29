@@ -1,0 +1,113 @@
+{% extends 'main/base.html'%}
+
+{%block title%}
+Notes Tracker
+{%endblock%}
+
+{%block main%}
+<script>
+    let notesArray = [];
+    const classColors = {
+        'Math': 'rgba(255, 99, 132, 0.3)', // Light red
+        'Science': 'rgba(54, 162, 235, 0.3)', // Light blue
+        'English': 'rgba(75, 192, 192, 0.3)', // Light green
+        // Add more classes and their colors here
+    };
+
+    // Function to add a new note
+    function addNote() {
+        const title = document.getElementById('noteTitle').value;
+        const date = document.getElementById('noteDate').value;
+        const className = document.getElementById('noteClassName').value.trim();
+        const subject = document.getElementById('noteSubjectInput').value.trim();
+        const fileInput = document.getElementById('noteFile');
+
+        if (!title || !date || !className || !subject || !fileInput.files.length) {
+            alert('Please enter all fields.');
+            return;
+        }
+
+        const file = fileInput.files[0];
+        const note = {
+            title: title,
+            date: new Date(date),
+            className: className,
+            subject: subject,
+            file: URL.createObjectURL(file) // Create a URL for the uploaded file
+        };
+
+        notesArray.push(note);
+        sortNotes();
+        document.getElementById('noteTitle').value = '';
+        document.getElementById('noteDate').value = '';
+        document.getElementById('noteClassName').value = '';
+        document.getElementById('noteSubjectInput').value = '';
+        fileInput.value = ''; // Reset file input
+    }
+
+    // Function to render the table based on the notesArray
+    function renderNotesTable() {
+        const notesTable = document.getElementById('notes');
+        notesTable.innerHTML = '';
+
+        notesArray.forEach((note, index) => {
+            const row = document.createElement('tr');
+            const titleCell = document.createElement('td');
+            titleCell.innerText = note.title;
+            const dateCell = document.createElement('td');
+            const formattedDate = (note.date.getMonth() + 1) + '/' + 
+                                  note.date.getDate() + '/' + 
+                                  note.date.getFullYear();
+            dateCell.innerText = formattedDate;
+
+            const classCell = document.createElement('td');
+            classCell.innerText = note.className;
+            classCell.style.backgroundColor = classColors[note.className] || 'transparent'; // Set dynamic color
+
+            const subjectCell = document.createElement('td');
+            subjectCell.innerText = note.subject;
+            
+            // File download link
+            const fileCell = document.createElement('td');
+            const fileLink = document.createElement('a');
+            fileLink.href = note.file;
+            fileLink.innerText = 'Download';
+            fileLink.target = '_blank'; // Open in a new tab
+            fileCell.appendChild(fileLink);
+
+            // Add remove button
+            const removeCell = document.createElement('td');
+            const removeButton = document.createElement('button');
+            removeButton.innerText = 'Remove';
+            removeButton.onclick = () => {
+                notesArray.splice(index, 1);
+                renderNotesTable();
+            };
+            removeCell.appendChild(removeButton);
+
+            row.appendChild(titleCell);
+            row.appendChild(dateCell);
+            row.appendChild(classCell);
+            row.appendChild(subjectCell);
+            row.appendChild(fileCell);
+            row.appendChild(removeCell);
+            notesTable.appendChild(row);
+        });
+    }
+
+    // Function to sort notes based on the selected criteria
+    function sortNotes() {
+        const sortBy = document.getElementById('noteSortOptions').value;
+        if (sortBy === 'date') {
+            notesArray.sort((a, b) => a.date - b.date);
+        } else if (sortBy === 'class') {
+            notesArray.sort((a, b) => a.className.localeCompare(b.className));
+        } else if (sortBy === 'subject') {
+            notesArray.sort((a, b) => a.subject.localeCompare(b.subject));
+        } else if (sortBy === 'title') {
+            notesArray.sort((a, b) => a.title.localeCompare(b.title));
+        }
+        renderNotesTable();
+    }
+</script>
+{%endblock%}
