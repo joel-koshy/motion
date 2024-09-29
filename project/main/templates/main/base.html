@@ -99,20 +99,85 @@
      
      main {
          flex-grow: 1;
+         padding: 20px;
          background-color: #fff;
      }
-    html, body, main{
-        height: 100%;
-    } 
+     
      main h1 {
          margin-bottom: 20px;
      }
+     /* Notes Tracker */
+     .Notes-note-list {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .Notes-note-list h2 {
+            margin: 0;
+        }
+        .Notes-sort-dropdown {
+            display: inline-block;
+        }
+        .Notes-sort-dropdown select {
+            padding: 5px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f1f1f1;
+        }
+        .Notes-add-note {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .Notes-add-note input, .Notes-add-note select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            flex: 1;
+            margin-right: 10px;
+            min-width: 150px;
+        }
+        .Notes-add-note button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            flex-basis: 100%;
+            margin-top: 10px;
+        }
+        .Notes-add-note button:hover {
+            background-color: #0056b3;
+        }
+
      /* Assignment tracker*/
      header {
             background-color: #007bff;
             color: white;
             padding: 20px;
             text-align: center;
+        }
+        main {
+            padding: 20px;
         }
         h1 {
             margin-bottom: 20px;
@@ -313,6 +378,9 @@
     background-color: #ffffff; /* White background */
     border-radius: 8px; /* Rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    padding: 20px; /* Padding around content */
+    max-width: 400px; /* Maximum width */
+    margin: 20px auto; /* Center align */
     font-family: Arial, sans-serif; /* Font styling */
 }
 

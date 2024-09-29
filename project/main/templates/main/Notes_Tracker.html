@@ -5,109 +5,175 @@ Notes Tracker
 {%endblock%}
 
 {%block main%}
+<div class="Notes-add-note">
+    <input type="text" id="noteTitle" placeholder="Note Title" required>
+    <input type="date" id="noteDate" placeholder="Date" required>
+    
+    <!-- Combined Class Input with Datalist -->
+    <input type="text" id="noteClassInput" placeholder="Select or add a class" list="classList" required>
+    <datalist id="classList">
+        <option value="Math">
+        <option value="Science">
+        <option value="English">
+    </datalist>
+
+    <!-- Combined Subject Input with Datalist -->
+    <input type="text" id="noteSubjectInput" placeholder="Select or add a subject" list="subjectList" required>
+    <datalist id="subjectList">
+        <option value="History">
+        <option value="Biology">
+        <option value="Literature">
+    </datalist>
+    
+    <!-- File Upload for Note -->
+    <input type="file" id="noteFile" required>
+    
+    <button onclick="addNote()">Add Note</button>
+</div>
+
+<!-- List of Notes -->
+<div class="Notes-note-list">
+    <h2>Your Notes</h2>
+    <div class="Notes-sort-dropdown">
+        <label for="sortOptions">Sort by: </label>
+        <select id="sortOptions" onchange="sortNotes()">
+            <option value="date">Date</option>
+            <option value="class">Class</option>
+            <option value="subject">Subject</option>
+            <option value="title">Title</option>
+        </select>
+    </div>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Date</th>
+            <th>Class</th>
+            <th>Subject</th>
+            <th>Uploaded File</th>
+        </tr>
+    </thead>
+    <tbody id="notes">
+        <!-- Dynamically added notes will go here -->
+    </tbody>
+</table>
+</main>
+
 <script>
-    let notesArray = [];
-    const classColors = {
-        'Math': 'rgba(255, 99, 132, 0.3)', // Light red
-        'Science': 'rgba(54, 162, 235, 0.3)', // Light blue
-        'English': 'rgba(75, 192, 192, 0.3)', // Light green
-        // Add more classes and their colors here
+let notesArray = [];
+const notesClassColors = {};
+
+// Function to generate a random light color
+function getRandomLightColor() {
+    const r = Math.floor(Math.random() * 256);
+    const g = Math.floor(Math.random() * 256);
+    const b = Math.floor(Math.random() * 256);
+    return `rgba(${r}, ${g}, ${b}, 0.3)`; // Light tint
+}
+
+// Function to add a new note
+function addNote() {
+    const title = document.getElementById('noteTitle').value;
+    const date = document.getElementById('noteDate').value;
+    const className = document.getElementById('noteClassInput').value.trim();
+    const subject = document.getElementById('noteSubjectInput').value.trim();
+    const file = document.getElementById('noteFile').files[0]; // Get uploaded file
+
+    if (!title || !date || !className || !subject || !file) {
+        alert('Please enter all fields and upload a file.');
+        return;
+    }
+
+    const note = {
+        title: title,
+        date: new Date(date), // Store as Date object for sorting
+        className: className,
+        subject: subject,
+        file: file // Store the uploaded file
     };
 
-    // Function to add a new note
-    function addNote() {
-        const title = document.getElementById('noteTitle').value;
-        const date = document.getElementById('noteDate').value;
-        const className = document.getElementById('noteClassName').value.trim();
-        const subject = document.getElementById('noteSubjectInput').value.trim();
-        const fileInput = document.getElementById('noteFile');
-
-        if (!title || !date || !className || !subject || !fileInput.files.length) {
-            alert('Please enter all fields.');
-            return;
-        }
-
-        const file = fileInput.files[0];
-        const note = {
-            title: title,
-            date: new Date(date),
-            className: className,
-            subject: subject,
-            file: URL.createObjectURL(file) // Create a URL for the uploaded file
-        };
-
-        notesArray.push(note);
-        sortNotes();
-        document.getElementById('noteTitle').value = '';
-        document.getElementById('noteDate').value = '';
-        document.getElementById('noteClassName').value = '';
-        document.getElementById('noteSubjectInput').value = '';
-        fileInput.value = ''; // Reset file input
+    // Assign a color if the class is new
+    if (!notesClassColors[className]) {
+        notesClassColors[className] = getRandomLightColor();
     }
 
-    // Function to render the table based on the notesArray
-    function renderNotesTable() {
-        const notesTable = document.getElementById('notes');
-        notesTable.innerHTML = '';
+    notesArray.push(note);
+    
+    // Sort by the current sort option before rendering
+    sortNotes();
+    
+    // Clear input fields
+    document.getElementById('noteTitle').value = '';
+    document.getElementById('noteDate').value = '';
+    document.getElementById('noteClassInput').value = '';
+    document.getElementById('noteSubjectInput').value = '';
+    document.getElementById('noteFile').value = ''; // Clear file input
+}
 
-        notesArray.forEach((note, index) => {
-            const row = document.createElement('tr');
-            const titleCell = document.createElement('td');
-            titleCell.innerText = note.title;
-            const dateCell = document.createElement('td');
-            const formattedDate = (note.date.getMonth() + 1) + '/' + 
-                                  note.date.getDate() + '/' + 
-                                  note.date.getFullYear();
-            dateCell.innerText = formattedDate;
+// Function to render the notes table
+function renderNotesTable() {
+    const notesTable = document.getElementById('notes');
+    notesTable.innerHTML = ''; // Clear current table
 
-            const classCell = document.createElement('td');
-            classCell.innerText = note.className;
-            classCell.style.backgroundColor = classColors[note.className] || 'transparent'; // Set dynamic color
+    notesArray.forEach((note, index) => {
+        const row = document.createElement('tr');
 
-            const subjectCell = document.createElement('td');
-            subjectCell.innerText = note.subject;
-            
-            // File download link
-            const fileCell = document.createElement('td');
-            const fileLink = document.createElement('a');
-            fileLink.href = note.file;
-            fileLink.innerText = 'Download';
-            fileLink.target = '_blank'; // Open in a new tab
-            fileCell.appendChild(fileLink);
+        const titleCell = document.createElement('td');
+        titleCell.innerText = note.title;
 
-            // Add remove button
-            const removeCell = document.createElement('td');
-            const removeButton = document.createElement('button');
-            removeButton.innerText = 'Remove';
-            removeButton.onclick = () => {
-                notesArray.splice(index, 1);
-                renderNotesTable();
-            };
-            removeCell.appendChild(removeButton);
+        const dateCell = document.createElement('td');
+        const formattedDate = (note.date.getMonth() + 1) + '/' + 
+                              note.date.getDate() + '/' + 
+                              note.date.getFullYear();
+        dateCell.innerText = formattedDate;
 
-            row.appendChild(titleCell);
-            row.appendChild(dateCell);
-            row.appendChild(classCell);
-            row.appendChild(subjectCell);
-            row.appendChild(fileCell);
-            row.appendChild(removeCell);
-            notesTable.appendChild(row);
+        const classCell = document.createElement('td');
+        classCell.innerText = note.className;
+        classCell.style.backgroundColor = notesClassColors[note.className]; // Set dynamic color
+
+        const subjectCell = document.createElement('td');
+        subjectCell.innerText = note.subject;
+
+        const fileCell = document.createElement('td');
+        const fileLink = document.createElement('a');
+        fileLink.href = URL.createObjectURL(note.file); // Create URL for file
+        fileLink.innerText = 'View File';
+        fileLink.download = note.file.name; // Set the download attribute
+        fileCell.appendChild(fileLink);
+
+        row.appendChild(titleCell);
+        row.appendChild(dateCell);
+        row.appendChild(classCell);
+        row.appendChild(subjectCell);
+        row.appendChild(fileCell);
+
+        notesTable.appendChild(row);
+    });
+}
+
+// Function to sort the notes based on the selected criteria
+function sortNotes() {
+    const sortOption = document.getElementById('sortOptions').value;
+    
+    if (sortOption === 'date') {
+        notesArray.sort((a, b) => a.date - b.date);
+    } else if (sortOption === 'class') {
+        notesArray.sort((a, b) => {
+            const classComparison = a.className.localeCompare(b.className);
+            if (classComparison === 0) {
+                return a.date - b.date; // Secondary sort by date
+            }
+            return classComparison;
         });
+    } else if (sortOption === 'subject') {
+        notesArray.sort((a, b) => a.subject.localeCompare(b.subject));
+    } else if (sortOption === 'title') {
+        notesArray.sort((a, b) => a.title.localeCompare(b.title));
     }
-
-    // Function to sort notes based on the selected criteria
-    function sortNotes() {
-        const sortBy = document.getElementById('noteSortOptions').value;
-        if (sortBy === 'date') {
-            notesArray.sort((a, b) => a.date - b.date);
-        } else if (sortBy === 'class') {
-            notesArray.sort((a, b) => a.className.localeCompare(b.className));
-        } else if (sortBy === 'subject') {
-            notesArray.sort((a, b) => a.subject.localeCompare(b.subject));
-        } else if (sortBy === 'title') {
-            notesArray.sort((a, b) => a.title.localeCompare(b.title));
-        }
-        renderNotesTable();
-    }
+    
+    renderNotesTable(); // Render the sorted table
+}
 </script>
 {%endblock%}
