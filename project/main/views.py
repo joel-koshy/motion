@@ -89,4 +89,5 @@ def create_new_user(request):
     elif request.method == 'GET': 
         return render(request, 'main/signup.html', {})
 
-   
+def notes(request):
+    return render(request, 'main/Notes_Tracker.html',{})   
