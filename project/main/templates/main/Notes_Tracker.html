@@ -4,12 +4,11 @@
 Notes Tracker
 {%endblock%}
 
-{%block main%}
-<header>
+{%block content%}
+<div class="notes_parent">
+<header></header>
     <h1 >Notes Tracker</h1>
 </header>
-&nbsp;
-&nbsp;
 <!-- Form to Add New Note -->
 <div class="Notes-add-note">
     <input type="text" id="noteTitle" placeholder="Note Title" required>
@@ -197,4 +196,6 @@ function removeNote(index) {
     renderNotesTable(); // Re-render the table
 }
 </script>
+</div>
+
 {%endblock%}

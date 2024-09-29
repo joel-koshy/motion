@@ -78,13 +78,13 @@
      }
      
      aside {
-         width: 250px;
+        min-width: 10vw;
+         max-width: 20vw;
          background-color: #fff;
          border-right: 1px solid #ccc;
          padding: 20px;
          height: calc(100vh - 50px); /* Deducting the height of the header */
      }
-     
      aside .menu .section-title {
          font-size: 16px;
          font-weight: bold;
@@ -472,15 +472,40 @@ header {
 <body>
     
     <main>
-        {% block main%}
-        
-        {% endblock %}
-        
+    <div class="container"></div>
+    <header>
+        <div class="logo">Motion</div>
+        <nav>
+            <ul>
+                <button id="addNotesButton">Add Notes</button>
+                <button id="uploadButton" onclick="openUploadPopup()">Upload Syllabus</button>
+
+            </ul>
+        </nav>
+    </header>
+    <div class="something">
+        <aside>
+            <div class="menu">
+                <div class="section-title">YOU</div>
+                <ul>
+                    <li><a href="/upload">Calendar</a></li>
+                    <li><a href="/tracker">Assignments</a></li>
+                    <li><a href="/notes">Notes</a></li>
+                </ul>
+        </aside>
         {% block content%}
             
         {% endblock %}
         
 
+    </div>
+    
+</div>
+        {% block main%}
+        
+        {% endblock %}
+        
+        
     </main>
 </body>
 </html>
