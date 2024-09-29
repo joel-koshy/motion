@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import test_collection, Files
+from .models import Files
 from django.http import HttpResponse, JsonResponse
 from .gemini_sandbox import get_ai_output
 from django.contrib.auth import authenticate, login, logout
@@ -7,11 +7,6 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 import json 
 # Create your views here.
-
-
-def test(request): 
-    data = test_collection.list_collection_names()
-    return HttpResponse(data)
 
 def syllabus_upload(request): 
     if request.method == 'POST' : 
