@@ -1,0 +1,199 @@
+{% extends 'main/base.html'%}
+
+{%block title%}
+Assingment Tracker
+{%endblock%}
+<style>
+
+</style>
+{%block main%}
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment Tracker</title>
+<header>
+    <h1 >Assignment Tracker</h1>
+</header>
+<!-- Form to Add New Assignment -->
+&nbsp;
+&nbsp;
+        <div class="tracker-add-assignment">
+        <input type="text" id="assignmentTitle" placeholder="Assignment Title" required>
+        <input type="date" id="assignmentDueDate" placeholder="Due Date" required>
+        
+        <!-- Combined Class Input with Datalist -->
+        <input type="text" id="classNameInput" placeholder="Select or add a class" list="classList" required>
+        <datalist id="classList">
+            <option value="Math">
+            <option value="Science">
+            <option value="English">
+        </datalist>
+        
+        <select id="assignmentType" required>
+            <option value="">Select Type</option>
+            <option value="Assignment">Assignment</option>
+            <option value="Quiz">Quiz</option>
+            <option value="Test">Test</option>
+        </select>
+        <button onclick="addAssignment()">Add Assignment</button>
+    </div>
+
+    <!-- List of Assignments -->
+    <div class="tracker-assignment-list">
+        <h2>Your Assignments</h2>
+        <div class="tracker-sort-dropdown">
+            <label for="sortOptions">Sort by: </label>
+            <select id="sortOptions" onchange="sortAssignments()">
+                <option value="dueDate">Due Date</option>
+                <option value="class">Class</option>
+                <option value="type">Type</option>
+                <option value="title">Title</option>
+            </select>
+        </div>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Due Date</th>
+                <th>Class</th>
+                <th>Type</th>
+                <th>Complete</th>
+                <th>Remove</th>
+            </tr>
+        </thead>
+        <tbody id="assignments">
+            <!-- Dynamically added assignments will go here -->
+        </tbody>
+    </table>
+
+
+<script>
+    let assignmentsArray = [];
+    const classColors = {};
+
+    // Function to generate a random light color
+    function getRandomLightColor() {
+        const r = Math.floor(Math.random() * 256);
+        const g = Math.floor(Math.random() * 256);
+        const b = Math.floor(Math.random() * 256);
+        // Lighten the color
+        return `rgba(${r}, ${g}, ${b}, 0.3)`;
+    }
+
+    // Function to add a new assignment
+    function addAssignment() {
+        const title = document.getElementById('assignmentTitle').value;
+        const dueDate = document.getElementById('assignmentDueDate').value;
+        
+        // Get class name from input
+        const className = document.getElementById('classNameInput').value.trim();
+
+        const assignmentType = document.getElementById('assignmentType').value;
+
+        if (!title || !dueDate || !className || !assignmentType) {
+            alert('Please enter all fields.');
+            return;
+        }
+
+        // Create a new assignment object
+        const assignment = {
+            title: title,
+            dueDate: new Date(dueDate), // Store as Date object for sorting
+            className: className,
+            type: assignmentType,
+            completed: false // Add completed status
+        };
+
+        // Assign a color if the class is new
+        if (!classColors[className]) {
+            classColors[className] = getRandomLightColor();
+        }
+
+        assignmentsArray.push(assignment);
+        
+        // Sort the table based on the currently selected option
+        sortAssignments();
+        
+        // Clear input fields
+        document.getElementById('assignmentTitle').value = '';
+        document.getElementById('assignmentDueDate').value = '';
+        document.getElementById('classNameInput').value = '';
+        document.getElementById('assignmentType').value = '';
+    }
+
+    // Function to render the table based on the assignmentsArray
+    function renderTable() {
+        const assignmentsTable = document.getElementById('assignments');
+        assignmentsTable.innerHTML = ''; // Clear current table
+
+        assignmentsArray.forEach((assignment, index) => {
+            const row = document.createElement('tr');
+            
+            const titleCell = document.createElement('td');
+            titleCell.innerText = assignment.title;
+            
+            const dueDateCell = document.createElement('td');
+            // Format date to mm/dd/yyyy
+            const formattedDate = (assignment.dueDate.getMonth() + 1) + '/' + 
+                                  assignment.dueDate.getDate() + '/' + 
+                                  assignment.dueDate.getFullYear();
+            dueDateCell.innerText = formattedDate;
+            
+            const classCell = document.createElement('td');
+            classCell.innerText = assignment.className;
+            classCell.style.backgroundColor = classColors[assignment.className]; // Set dynamic color
+            
+            const typeCell = document.createElement('td');
+            typeCell.innerText = assignment.type;
+
+            const completeCell = document.createElement('td');
+            const completeCheckbox = document.createElement('input');
+            completeCheckbox.type = 'checkbox';
+            completeCheckbox.className = 'tracker-complete-checkbox';
+            completeCheckbox.checked = assignment.completed;
+            completeCheckbox.onchange = () => {
+                assignment.completed = completeCheckbox.checked; // Update assignment status
+                renderTable(); // Re-render the table to show updated status
+            };
+            completeCell.appendChild(completeCheckbox);
+            completeCell.className = assignment.completed ? 'tracker-complete-checked' : 'tracker-complete-cell'; // Change cell color based on completion
+            
+            const removeCell = document.createElement('td');
+            const removeButton = document.createElement('button');
+            removeButton.innerText = 'Remove';
+            removeButton.onclick = () => {
+                assignmentsArray.splice(index, 1); // Remove assignment from array
+                renderTable(); // Re-render the table
+            };
+            removeCell.appendChild(removeButton);
+            
+            row.appendChild(titleCell);
+            row.appendChild(dueDateCell);
+            row.appendChild(classCell);
+            row.appendChild(typeCell);
+            row.appendChild(completeCell);
+            row.appendChild(removeCell);
+            assignmentsTable.appendChild(row);
+        });
+    }
+
+    // Function to sort the assignments based on the selected criteria
+    function sortAssignments() {
+        const sortOption = document.getElementById('sortOptions').value;
+        
+        if (sortOption === 'dueDate') {
+            assignmentsArray.sort((a, b) => a.dueDate - b.dueDate);
+        } else if (sortOption === 'class') {
+            assignmentsArray.sort((a, b) => a.className.localeCompare(b.className));
+        } else if (sortOption === 'type') {
+            assignmentsArray.sort((a, b) => a.type.localeCompare(b.type));
+        } else if (sortOption === 'title') {
+            assignmentsArray.sort((a, b) => a.title.localeCompare(b.title));
+        }
+
+        renderTable(); // Re-render the table after sorting
+    }
+</script>
+{%endblock%}
+

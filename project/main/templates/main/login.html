@@ -5,20 +5,16 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-
-        {%if user.is_authenticated%}
-        <form method="post" action="../auth/logout">
-            {%csrf_token%}
-            <h2>
-                Are you sure you want to logout?
-            </h2>
+<div class="container">
+    {% if user.is_authenticated %}
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <h2>Are you sure you want to logout?</h2>
             <input type="submit" class="login-button" value="Logout">
         </form>
-        {%else%}
- 
+    {% else %}
         <h2>Login</h2>
-       {% if form.non_field_errors %}
+        {% if form.non_field_errors %}
             <div class="error">
                 {{ form.non_field_errors }}
             </div>
@@ -34,8 +30,8 @@
             <button type="submit" class="login-button">Login</button>
         </form>
         <div class="signup-link">
-            <p>Don't have an account? <a href="{%url 'signup_page'%}">Sign up here</a></p>
+            <p>Don't have an account? <a href="{% url 'signup_page' %}">Sign up here</a></p>
         </div>
-        {%endif%}
-    </div>
+    {% endif %}
+</div>
 {% endblock %}

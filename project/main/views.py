@@ -38,7 +38,8 @@ def syllabus_upload(request):
         }
         return render(request, 'main/upload_pdf.html', context)
     
-
+def tracker_page(request):
+    return render(request, 'main/Assignment_Tracker.html', {})
 
 
 def home(request): 
