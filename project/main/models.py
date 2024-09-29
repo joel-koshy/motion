@@ -11,6 +11,7 @@ class Events(models.Model):
     eventType = models.CharField(max_length=15)
     title = models.CharField(max_length=100)
     start = models.CharField(max_length=20)
+    end=models.CharField(max_length=20, blank=True, null=True)
     backgroundColor = models.CharField(max_length=20, null=True)
     course = models.CharField(max_length=20, null=True)
     class Meta: 
@@ -18,4 +19,6 @@ class Events(models.Model):
     
     def __str__(self) -> str:
         return (" " + self.title)
+    
+    
     

@@ -22,7 +22,7 @@ def syllabus_upload(request):
                 title = title, 
                 start = start, 
                 user = request.user,
-                color = request.POST['color'],
+                backgroundColor = request.POST['color'],
                 course = request.POST['course']
             )
             print(event)
