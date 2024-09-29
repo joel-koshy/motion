@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Files, Events
+from .models import Files, Events, Course, Notes
 from django.http import HttpResponse, JsonResponse
 from .gemini_sandbox import get_ai_output
 from django.contrib.auth import authenticate, login, logout
@@ -13,6 +13,11 @@ def syllabus_upload(request):
     if request.method == 'POST' : 
         file = Files.objects.create(file=request.FILES.get('pdf'))
         res = get_ai_output(file.file.path)
+        Course.objects.create(
+            student = request.user, 
+            title = request.POST['course']
+        )
+
         for event in res: 
             eventType = event['eventType']
             title = event['title']
@@ -26,6 +31,13 @@ def syllabus_upload(request):
                 course = request.POST['course']
             )
             print(event)
+
+        queryset = Events.objects.filter(user = request.user)
+        serialized_queryset = serializers.serialize('json', queryset)
+        context = {
+            "calendarEvents":serialized_queryset
+        }
+        return render(request, 'main/upload_pdf.html', context)
         
         json_parsed = json.dumps(res)
 
@@ -34,6 +46,7 @@ def syllabus_upload(request):
         }
         print(type(res))
         print(res)
+
         
         # return JsonResponse(res, safe=False)
         return render(request, 'main/upload_pdf.html', context) 
@@ -115,4 +128,31 @@ def create_new_user(request):
         return render(request, 'main/signup.html', {})
 
 def notes(request):
-    return render(request, 'main/Notes_Tracker.html',{})   
+    if request.method == 'GET': 
+        querySet = Course.objects.filter(student = request.user)
+        note_querySet = Notes.objects.filter(author = request.user)
+
+        context = {
+            "Courses":querySet.values, 
+            "Notes":note_querySet.values(), 
+        }
+        return render(request, 'main/Notes_Tracker.html',context)
+    
+    elif request.method == 'POST': 
+        course = Course.objects.filter(title = request.POST['Course']).first()
+
+        Notes.objects.create(
+            author=request.user, 
+            course = course,
+            note = request.FILES.get('note') 
+        )
+
+        querySet = Course.objects.filter(student = request.user)
+        note_querySet = Notes.objects.filter(author = request.user)
+
+        context = {
+            "Courses":querySet.values(), 
+            "Notes":note_querySet.values(), 
+        }
+        return render(request, 'main/Notes_Tracker.html',context)
+ 

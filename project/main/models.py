@@ -5,6 +5,9 @@ from django.contrib.auth.models import User
 class Files(models.Model): 
     file = models.FileField(upload_to="syllabus")
 
+class Course(models.Model): 
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=50)
 
 class Events(models.Model): 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -14,11 +17,14 @@ class Events(models.Model):
     end=models.CharField(max_length=20, blank=True, null=True)
     backgroundColor = models.CharField(max_length=20, null=True)
     course = models.CharField(max_length=20, null=True)
-    class Meta: 
-        unique_together = (('title'), ('start'))
-    
+   
     def __str__(self) -> str:
         return (" " + self.title)
     
-    
+
+class Notes(models.Model): 
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    note = models.FileField(upload_to="notes")
+
     
