@@ -20,6 +20,11 @@ Upload Syllabus
       document.addEventListener('DOMContentLoaded', function() {
         const calendarEl = document.getElementById('calendar')
         const calendarEvents = JSON.parse('{{calendarEvents|safe}}') 
+        if(calendarEvents[0].hasOwnProperty('fields')){
+            calendarEvents.forEach((item, index) => {
+                calendarEvents[index] = item['fields']
+            })
+        }
         console.log(calendarEvents)
         const calendar = new Calendar(calendarEl, {
           width: '80%', 

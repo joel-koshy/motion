@@ -1,10 +1,11 @@
 from django.shortcuts import render
-from .models import Files
+from .models import Files, Events
 from django.http import HttpResponse, JsonResponse
 from .gemini_sandbox import get_ai_output
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
+from django.core import serializers
 import json 
 # Create your views here.
 
@@ -17,7 +18,20 @@ def syllabus_upload(request):
         # res = get_ai_output(request.FILES.get('pdf'))
         file = Files.objects.create(file=request.FILES.get('pdf'))
         res = get_ai_output(file.file.path)
+        for event in res: 
+            eventType = event['eventType']
+            title = event['title']
+            start = event['start']
+            Events.objects.create(
+                eventType = eventType,
+                title = title, 
+                start = start, 
+                user = request.user
+            )
+            print(event)
+        
         json_parsed = json.dumps(res)
+
         context = {
             "calendarEvents": json_parsed
         }
@@ -28,8 +42,10 @@ def syllabus_upload(request):
         return render(request, 'main/upload_pdf.html', context) 
     
     elif request.method == 'GET':
+        queryset = Events.objects.filter(user = request.user)
+        serialized_queryset = serializers.serialize('json', queryset)
         context = {
-            "calendarEvents":[]
+            "calendarEvents":serialized_queryset
         }
         return render(request, 'main/upload_pdf.html', context)
     
