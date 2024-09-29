@@ -11,7 +11,7 @@ class Events(models.Model):
     eventType = models.CharField(max_length=15)
     title = models.CharField(max_length=100)
     start = models.CharField(max_length=20)
-    color = models.CharField(max_length=20, null=True)
+    backgroundColor = models.CharField(max_length=20, null=True)
     course = models.CharField(max_length=20, null=True)
     class Meta: 
         unique_together = (('title'), ('start'))
