@@ -54,6 +54,20 @@ def tracker_page(request):
             "calendarEvents": queryset.values()
         }
         return render(request, 'main/Assignment_Tracker.html', context)
+    elif request.method == 'POST': 
+        Events.objects.create(
+            eventType=request.POST['type'],
+            start=request.POST['date'], 
+            course=request.POST['course'], 
+            title=request.POST['title'],
+            user=request.user  
+        )
+        queryset = Events.objects.filter(user = request.user).order_by('start')
+        serialized_queryset = serializers.serialize('json', queryset)
+        context = {
+            "calendarEvents": queryset.values()
+        }
+        return render(request, 'main/Assignment_Tracker.html', context) 
 
 def tracker_page_sort(request, order): 
     if request.method == 'GET': 

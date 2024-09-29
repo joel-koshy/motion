@@ -8,13 +8,13 @@ Assingment Tracker
 </style>
 {%block content%}
 <div class="tracker-add-assignment">
-        <form action="" >
+        <form action="" method="post">
             {%csrf_token%}
 
-            <input type="text" id="assignmentTitle" placeholder="Assignment Title" required>
-            <input type="date" id="assignmentDueDate" placeholder="Due Date" required>
-            <input type="text" id="classNameInput" placeholder="Select or add a class" list="classList" required>
-            <select id="assignmentType" required>
+            <input name="title" type="text" id="assignmentTitle" placeholder="Assignment Title" required>
+            <input name="date" type="date" id="assignmentDueDate" placeholder="Due Date" required>
+            <input name="course" type="text" id="classNameInput" placeholder="Select or add a class" list="classList" required>
+            <select name="type" id="assignmentType" required>
                 <option value="">Select Type</option>
                 <option value="Assesment">Assesment</option>
                 <option value="Assignment">Assignment</option>
@@ -51,7 +51,7 @@ Assingment Tracker
             <tr>
                 <td>{{event.title}}</td>
                 <td>{{event.start}}</td>
-                <td>PlaceHolder</td>
+                <td>{{event.course}}</td>
                 <td>{{event.eventType}}</td>
                 <td class="tracker-complete-cell">
                     <input class="tracker-complete-checkbox" type="checkbox">
