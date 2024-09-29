@@ -17,26 +17,20 @@ Assingment Tracker
 &nbsp;
 &nbsp;
         <div class="tracker-add-assignment">
-        <input type="text" id="assignmentTitle" placeholder="Assignment Title" required>
-        <input type="date" id="assignmentDueDate" placeholder="Due Date" required>
-        
-        <!-- Combined Class Input with Datalist -->
-        <input type="text" id="classNameInput" placeholder="Select or add a class" list="classList" required>
-        <datalist id="classList">
-            <option value="Math">
-            <option value="Science">
-            <option value="English">
-        </datalist>
-        
-        <select id="assignmentType" required>
-            <option value="">Select Type</option>
-            <option value="Assignment">Assignment</option>
-            <option value="Quiz">Quiz</option>
-            <option value="Test">Test</option>
-        </select>
-        <button onclick="addAssignment()">Add Assignment</button>
-    </div>
+        <form action="" >
+            {%csrf_token%}
 
+            <input type="text" id="assignmentTitle" placeholder="Assignment Title" required>
+            <input type="date" id="assignmentDueDate" placeholder="Due Date" required>
+            <input type="text" id="classNameInput" placeholder="Select or add a class" list="classList" required>
+            <select id="assignmentType" required>
+                <option value="">Select Type</option>
+                <option value="Assesment">Assesment</option>
+                <option value="Assignment">Assignment</option>
+            </select>
+
+            <button type="submit">Add Assignment</button>
+        </form>
     <!-- List of Assignments -->
     <div class="tracker-assignment-list">
         <h2>Your Assignments</h2>
@@ -50,7 +44,6 @@ Assingment Tracker
             </select>
         </div>
     </div>
-    
     <table>
         <thead>
             <tr>
@@ -63,15 +56,27 @@ Assingment Tracker
             </tr>
         </thead>
         <tbody id="assignments">
+            {%for event in calendarEvents%}
+            <tr>
+                <td>{{event.title}}</td>
+                <td>{{event.start}}</td>
+                <td>PlaceHolder</td>
+                <td>{{event.eventType}}</td>
+                <td class="tracker-complete-cell">
+                    <input class="tracker-complete-checkbox" type="checkbox">
+                </td>
+                <td>
+                    <button>Remove</button>
+                </td>
+            </tr>
+            {%endfor%}
             <!-- Dynamically added assignments will go here -->
         </tbody>
     </table>
 
 
 <script>
-    let assignmentsArray = [];
     const classColors = {};
-
     // Function to generate a random light color
     function getRandomLightColor() {
         const r = Math.floor(Math.random() * 256);
@@ -80,120 +85,18 @@ Assingment Tracker
         // Lighten the color
         return `rgba(${r}, ${g}, ${b}, 0.3)`;
     }
-
-    // Function to add a new assignment
-    function addAssignment() {
-        const title = document.getElementById('assignmentTitle').value;
-        const dueDate = document.getElementById('assignmentDueDate').value;
-        
-        // Get class name from input
-        const className = document.getElementById('classNameInput').value.trim();
-
-        const assignmentType = document.getElementById('assignmentType').value;
-
-        if (!title || !dueDate || !className || !assignmentType) {
-            alert('Please enter all fields.');
-            return;
+    function sortAssignments(){
+        let sortOption = document.getElementById('sortOptions').value
+        console.log(sortOption)
+        if(sortOption == "type"){
+            window.location.href = window.location.href + "eventType" 
+        }else if (sortOption = "dueDate"){
+            window.location.href = window.location.href + "start"
+        }else if (sortOption = "title"){
+            window.location.href = window.location.href + "title"
         }
-
-        // Create a new assignment object
-        const assignment = {
-            title: title,
-            dueDate: new Date(dueDate), // Store as Date object for sorting
-            className: className,
-            type: assignmentType,
-            completed: false // Add completed status
-        };
-
-        // Assign a color if the class is new
-        if (!classColors[className]) {
-            classColors[className] = getRandomLightColor();
-        }
-
-        assignmentsArray.push(assignment);
-        
-        // Sort the table based on the currently selected option
-        sortAssignments();
-        
-        // Clear input fields
-        document.getElementById('assignmentTitle').value = '';
-        document.getElementById('assignmentDueDate').value = '';
-        document.getElementById('classNameInput').value = '';
-        document.getElementById('assignmentType').value = '';
     }
-
-    // Function to render the table based on the assignmentsArray
-    function renderTable() {
-        const assignmentsTable = document.getElementById('assignments');
-        assignmentsTable.innerHTML = ''; // Clear current table
-
-        assignmentsArray.forEach((assignment, index) => {
-            const row = document.createElement('tr');
-            
-            const titleCell = document.createElement('td');
-            titleCell.innerText = assignment.title;
-            
-            const dueDateCell = document.createElement('td');
-            // Format date to mm/dd/yyyy
-            const formattedDate = (assignment.dueDate.getMonth() + 1) + '/' + 
-                                  assignment.dueDate.getDate() + '/' + 
-                                  assignment.dueDate.getFullYear();
-            dueDateCell.innerText = formattedDate;
-            
-            const classCell = document.createElement('td');
-            classCell.innerText = assignment.className;
-            classCell.style.backgroundColor = classColors[assignment.className]; // Set dynamic color
-            
-            const typeCell = document.createElement('td');
-            typeCell.innerText = assignment.type;
-
-            const completeCell = document.createElement('td');
-            const completeCheckbox = document.createElement('input');
-            completeCheckbox.type = 'checkbox';
-            completeCheckbox.className = 'tracker-complete-checkbox';
-            completeCheckbox.checked = assignment.completed;
-            completeCheckbox.onchange = () => {
-                assignment.completed = completeCheckbox.checked; // Update assignment status
-                renderTable(); // Re-render the table to show updated status
-            };
-            completeCell.appendChild(completeCheckbox);
-            completeCell.className = assignment.completed ? 'tracker-complete-checked' : 'tracker-complete-cell'; // Change cell color based on completion
-            
-            const removeCell = document.createElement('td');
-            const removeButton = document.createElement('button');
-            removeButton.innerText = 'Remove';
-            removeButton.onclick = () => {
-                assignmentsArray.splice(index, 1); // Remove assignment from array
-                renderTable(); // Re-render the table
-            };
-            removeCell.appendChild(removeButton);
-            
-            row.appendChild(titleCell);
-            row.appendChild(dueDateCell);
-            row.appendChild(classCell);
-            row.appendChild(typeCell);
-            row.appendChild(completeCell);
-            row.appendChild(removeCell);
-            assignmentsTable.appendChild(row);
-        });
-    }
-
-    // Function to sort the assignments based on the selected criteria
-    function sortAssignments() {
-        const sortOption = document.getElementById('sortOptions').value;
-        
-        if (sortOption === 'dueDate') {
-            assignmentsArray.sort((a, b) => a.dueDate - b.dueDate);
-        } else if (sortOption === 'class') {
-            assignmentsArray.sort((a, b) => a.className.localeCompare(b.className));
-        } else if (sortOption === 'type') {
-            assignmentsArray.sort((a, b) => a.type.localeCompare(b.type));
-        } else if (sortOption === 'title') {
-            assignmentsArray.sort((a, b) => a.title.localeCompare(b.title));
-        }
-
-        renderTable(); // Re-render the table after sorting
-    }
+   
 </script>
 {%endblock%}
 

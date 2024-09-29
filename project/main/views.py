@@ -11,11 +11,6 @@ import json
 
 def syllabus_upload(request): 
     if request.method == 'POST' : 
-        data = {
-            "pdf":request.FILES.get('pdf')
-        }
-    
-        # res = get_ai_output(request.FILES.get('pdf'))
         file = Files.objects.create(file=request.FILES.get('pdf'))
         res = get_ai_output(file.file.path)
         for event in res: 
@@ -26,7 +21,9 @@ def syllabus_upload(request):
                 eventType = eventType,
                 title = title, 
                 start = start, 
-                user = request.user
+                user = request.user,
+                color = "red",
+                course = request.POST['course']
             )
             print(event)
         
@@ -50,8 +47,23 @@ def syllabus_upload(request):
         return render(request, 'main/upload_pdf.html', context)
     
 def tracker_page(request):
-    return render(request, 'main/Assignment_Tracker.html', {})
+    if request.method == 'GET':
+        queryset = Events.objects.filter(user = request.user).order_by('start')
+        serialized_queryset = serializers.serialize('json', queryset)
+        context = {
+            "calendarEvents": queryset.values()
+        }
+        return render(request, 'main/Assignment_Tracker.html', context)
 
+def tracker_page_sort(request, order): 
+    if request.method == 'GET': 
+        queryset = Events.objects.filter(user = request.user).order_by(order)
+        serialized_queryset = serializers.serialize('json', queryset)
+        context = {
+            "calendarEvents": queryset.values()
+        }
+
+        return render(request, 'main/Assignment_Tracker.html', context)
 
 def home(request): 
     return render(request, 'main/base.html', {})
@@ -59,7 +71,6 @@ def home(request):
 
 def alogin(request):
     if request.method == 'POST': 
-
         username=request.POST["username"]
         password=request.POST["password"]
         print(username, password)
