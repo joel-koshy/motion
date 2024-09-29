@@ -5,6 +5,12 @@ Notes Tracker
 {%endblock%}
 
 {%block main%}
+<header>
+    <h1 >Notes Tracker</h1>
+</header>
+&nbsp;
+&nbsp;
+<!-- Form to Add New Note -->
 <div class="Notes-add-note">
     <input type="text" id="noteTitle" placeholder="Note Title" required>
     <input type="date" id="noteDate" placeholder="Date" required>
@@ -53,6 +59,7 @@ Notes Tracker
             <th>Class</th>
             <th>Subject</th>
             <th>Uploaded File</th>
+            <th>Action</th> <!-- Added Action column for Remove button -->
         </tr>
     </thead>
     <tbody id="notes">
@@ -143,11 +150,19 @@ function renderNotesTable() {
         fileLink.download = note.file.name; // Set the download attribute
         fileCell.appendChild(fileLink);
 
+        const actionCell = document.createElement('td');
+        const removeButton = document.createElement('button');
+        removeButton.innerText = 'Remove';
+        removeButton.classList.add('remove-note-btn');
+        removeButton.onclick = () => removeNote(index); // Attach remove function
+        actionCell.appendChild(removeButton);
+
         row.appendChild(titleCell);
         row.appendChild(dateCell);
         row.appendChild(classCell);
         row.appendChild(subjectCell);
         row.appendChild(fileCell);
+        row.appendChild(actionCell); // Append action cell with Remove button
 
         notesTable.appendChild(row);
     });
@@ -174,6 +189,12 @@ function sortNotes() {
     }
     
     renderNotesTable(); // Render the sorted table
+}
+
+// Function to remove a note
+function removeNote(index) {
+    notesArray.splice(index, 1); // Remove note from array by index
+    renderNotesTable(); // Re-render the table
 }
 </script>
 {%endblock%}
