@@ -5,6 +5,7 @@ Upload Syllabus
 {%endblock%}
 
 {%block js%}
+
 <script type='importmap'>
       {
         "imports": {
@@ -20,11 +21,6 @@ Upload Syllabus
       document.addEventListener('DOMContentLoaded', function() {
         const calendarEl = document.getElementById('calendar')
         const calendarEvents = JSON.parse('{{calendarEvents|safe}}') 
-        if(calendarEvents[0].hasOwnProperty('fields')){
-            calendarEvents.forEach((item, index) => {
-                calendarEvents[index] = item['fields']
-            })
-        }
         console.log(calendarEvents)
         const calendar = new Calendar(calendarEl, {
           width: '80%', 
@@ -32,11 +28,14 @@ Upload Syllabus
           headerToolbar: {
             left: 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
           }, 
-          events: calendarEvents
+          events: calendarEvents,
+          contentHeight:"auto",
         })
         calendar.render()
+        Integer, "auto"
+      
       })
     </script>
 {%endblock%}
@@ -62,20 +61,13 @@ Upload Syllabus
                     <li><button>Classes</button></li>
                     <li><button>Notes</button></li>
                 </ul>
-                <div class="section-title">COMPANY</div>
-                <ul>
-                    <li><button>Upload</button></li>
-                    <li><button>Schedule</button></li>
-                    <li><button>Notes</button></li>
-                </ul>
-            </div>
         </aside>
         <div id="calendar"></div>
     </div>
     
 </div>
 {%endblock%}
-
+<div id='calendar'></div>
 {%block content%}
 <div id="uploadModal" class="modal">
     <div class="modal-content">

@@ -14,7 +14,12 @@
          padding: 0;
          box-sizing: border-box;
      }
-     
+     #calendar {
+        min-width: 900px;
+        max-width: 950px;
+        margin: 40px auto;
+
+}
      body {
          font-family: Arial, sans-serif;
          background-color: #f8f9fa;
@@ -26,12 +31,13 @@
      
      .container {
          display: flex;
-         height: 100vh;
+         height: auto;
          flex-direction: column;
      }
 
      .something{
         display: flex;
+        min-width: 900px;
      }
      
      header {
@@ -391,7 +397,7 @@
     border-radius: 8px; /* Rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
     padding: 20px; /* Padding around content */
-    max-width: 400px; /* Maximum width */
+
     margin: 20px auto; /* Center align */
     font-family: Arial, sans-serif; /* Font styling */
 }
@@ -458,11 +464,13 @@ header {
             text-align: center;
 }
 </style>
-     {%block js %}
+
+    {%block js %}
      {%endblock%} 
 </head>
 
 <body>
+    
     <main>
         {% block main%}
         
